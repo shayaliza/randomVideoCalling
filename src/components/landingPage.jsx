@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
+import io from "socket.io-client";
 import Peer from "simple-peer";
 
-import io from "socket.io-client";
-// import Peer from "simple-peer";
-
-// const socket = io("http://localhost:5000");
 const socket = io("https://backend-random-video-calling.vercel.app/");
 
 const LandingPage = () => {
@@ -13,6 +10,7 @@ const LandingPage = () => {
   const userVideoRef = useRef();
   const partnerVideoRef = useRef();
   const [initiator, setInitiator] = useState(false);
+  const [peer, setPeer] = useState(null);
 
   useEffect(() => {
     socket.on("roomID", (id) => {
@@ -43,20 +41,15 @@ const LandingPage = () => {
   };
 
   const handleOffer = (offer) => {
-    const peer = new Peer({ initiator: false, stream });
-    peer.signal(offer);
+    const newPeer = new Peer({ initiator: false, stream });
 
-    peer.on("stream", (stream) => {
+    newPeer.on("stream", (stream) => {
       partnerVideoRef.current.srcObject = stream;
     });
 
-    peer.on("signal", (data) => {
-      socket.emit("message", { type: "answer", answer: data });
-    });
+    newPeer.signal(offer);
 
-    peer.on("error", (err) => {
-      console.error("Peer error:", err);
-    });
+    setPeer(newPeer);
   };
 
   const handleAnswer = (answer) => {
@@ -69,12 +62,18 @@ const LandingPage = () => {
     });
   };
 
-  let peer;
+  let peerComponent;
   if (initiator) {
-    peer = new Peer({ initiator: true, stream });
-    peer.on("signal", (data) => {
-      socket.emit("message", { type: "offer", offer: data });
-    });
+    peerComponent = (
+      <Peer
+        initiator={true}
+        stream={stream}
+        onData={() => {}}
+        onSignal={(data) => {
+          socket.emit("message", { type: "offer", offer: data });
+        }}
+      />
+    );
   }
 
   return (
@@ -100,6 +99,7 @@ const LandingPage = () => {
             autoPlay
             style={{ width: "50%" }}
           ></video>
+          {peerComponent}
         </div>
       </div>
     </div>
