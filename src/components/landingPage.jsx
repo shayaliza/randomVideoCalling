@@ -4,7 +4,8 @@ import Peer from "simple-peer";
 import io from "socket.io-client";
 // import Peer from "simple-peer";
 
-const socket = io("http://localhost:5000"); // Connect to your server URL
+// const socket = io("http://localhost:5000");
+const socket = io("https://backend-random-video-calling.vercel.app/");
 
 const LandingPage = () => {
   const [roomID, setRoomID] = useState(null);
