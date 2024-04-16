@@ -79,7 +79,7 @@ const LandingPage = () => {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="text-center">
-        <h1 className="text-4xl mb-4">Welcome to Video Call App</h1>
+        <h1 className="text-4xl mb-4">Welcome to audio Call App</h1>
         <button
           onClick={handleJoin}
           className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
